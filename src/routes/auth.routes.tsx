@@ -10,7 +10,7 @@ type AuthRoutes = {
   SignUp: undefined;
 };
 
-export type AuthNavigatorRouterProps = NativeStackNavigationProp<AuthRoutes>;
+export type AuthNavigatorRoutesProps = NativeStackNavigationProp<AuthRoutes>;
 
 const { Navigator, Screen } = createNativeStackNavigator<AuthRoutes>();
 
