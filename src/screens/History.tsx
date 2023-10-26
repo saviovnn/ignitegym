@@ -1,21 +1,47 @@
-import { useState } from "react";
-import { SectionList } from "native-base";
-import { ScreenHeader } from "@components/ScreenHeader";
-import { HistoryCard } from "@components/HistoryCard";
-
+import { useCallback, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { SectionList, useToast } from "native-base";
 import { Heading, VStack, Text } from "native-base";
 
+import { api } from "@services/api";
+import { HistoryByDayDTO } from "@dtos/HistoryByDayDTO";
+
+import { ScreenHeader } from "@components/ScreenHeader";
+import { HistoryCard } from "@components/HistoryCard";
+import { AppError } from "@utils/AppError";
+
 export function History() {
-  const [exercises, setExercises] = useState([
-    {
-      title: "23.10.23",
-      data: ["Puxada frontal", "Remada unilateral"],
-    },
-    {
-      title: "25.10.23",
-      data: ["Puxada frotal"],
-    },
-  ]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [exercises, setExercises] = useState<HistoryByDayDTO[]>([]);
+
+  const toast = useToast();
+
+  async function fecthHistory() {
+    try {
+      setIsLoading(true);
+      const response = await api.get("/history");
+      setExercises(response.data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : "Não foi possível carregar o histórico.";
+
+      toast.show({
+        title,
+        placement: "top",
+        bgColor: "red.500",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      fecthHistory();
+    }, [])
+  );
 
   return (
     <VStack flex={1}>
@@ -23,8 +49,8 @@ export function History() {
 
       <SectionList
         sections={exercises}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => <HistoryCard />}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <HistoryCard data={item} />}
         renderSectionHeader={({ section }) => (
           <Heading
             color="gray.200"

@@ -16,12 +16,12 @@ import { Exercise } from "@screens/Exercise";
 
 type AppRoutes = {
   home: undefined;
-  exercise: undefined;
+  exercise: { exerciseId: string };
   profile: undefined;
   history: undefined;
 };
 
-export type AppNavigationRoutesProps = BottomTabNavigationProp<AppRoutes>;
+export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;
 
 const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>();
 
